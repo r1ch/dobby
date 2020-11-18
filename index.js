@@ -1,6 +1,8 @@
 //Libraries
 const WebSocket = require("ws")
 const net = require("net")
+const https = require("https")
+coonst fs = require("fs")
 
 //Constants
 const MY_NAME = "Dobby"
@@ -14,9 +16,13 @@ const defaults = {
 	host: "syncplay.pl",
 }
 
+//Secure as shit mate
+const server = https.createServer({
+  cert: fs.readFileSync('./cert.pem'),
+  key: fs.readFileSync('./key.pem')
+});
 
-//Create a WebSocket listener on port 8080
-const wss = new WebSocket.Server({port:8080})
+const wss = new WebSocket.Server({ server });
 
 const wsMessageHandler = ws => message => {
 	//console.log(message)
