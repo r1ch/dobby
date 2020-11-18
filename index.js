@@ -43,6 +43,8 @@ const connectToSyncPlay = config => new Promise((resolve,reject)=>{
 
 const spCloseHandler = connection => () =>{
 	console.error("Shit is so cash, I just closed")
+	connectToSyncPlay(defaults)
+	.then(()=>console.log(`Reconnected to ${JSON.stringify(defaults)}`))
 }
 
 const spConnectionHandler = connection => () => {
@@ -61,7 +63,7 @@ const spDataHandler = connection => data => {
 }
 
 const ping = connection => () => {
-	//connection.write(`{"State": {"ping":{"clientRtt":0}}}\r\n`)
+	connection.write(`{"State": {"ping":{}}}\r\n`)
 }
 
 
