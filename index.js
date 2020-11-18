@@ -35,7 +35,7 @@ const wsConnectionHandler = ws => {
 }
 
 wss.on('connection', wsConnectionHandler)
-server.listen(443);
+server.listen(8443);
 
 
 //Create a SyncPlay socket
