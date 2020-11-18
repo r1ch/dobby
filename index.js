@@ -63,12 +63,13 @@ const spDataHandler = connection => data => {
 	//on data, tell anyone connected to the wss
 	let json = {}
 	try{ json = JSON.parse(data.toString().trim()) }
-	catch(e){ console.error(`Unparseable data: ${data.toString()}`)}
+	catch(e){ console.error(`Unparseable data: ->${data.toString()}<-`)}
 	if(json.State && json.State.playstate){
+		console.log(data.toString().trim())
 		wss.clients.forEach(sendJson(json.State.playstate))
 		let ping = `{"State": {"ping": {"clientRtt": 0, "clientLatencyCalculation": ${json.State.latencyCalculation}, "latencyCalculation": ${Date.now()/1000}}, "playstate": {"paused": false, "position": ${json.State.position}}}}\r\n`;
 		console.log(ping)
-		connection.write(ping)
+		//connection.write(ping)
 	}
 }
 
