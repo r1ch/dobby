@@ -2,7 +2,7 @@
 const WebSocket = require("ws")
 const net = require("net")
 const https = require("https")
-coonst fs = require("fs")
+const fs = require("fs")
 
 //Constants
 const MY_NAME = "Dobby"
