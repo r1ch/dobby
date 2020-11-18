@@ -27,7 +27,7 @@ const wsConnectionHandler = ws => {
 	ws.send("Welcome, Cuntface")
 }
 
-const wss.on('connection', wsConnectionHandler)
+wss.on('connection', wsConnectionHandler)
 
 
 //Create a SyncPlay socket
