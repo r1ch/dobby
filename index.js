@@ -75,7 +75,7 @@ const spDataHandler = connection => data => {
 				playstate: {paused:false, position: json.State.playstate.position},
 			}       
 		}
-		console.log(`Ping w/:${JSON.stringify(pingMessage)})
+		console.log(`Ping w/:${JSON.stringify(pingMessage)}`)
 		connection.write(`${JSON.stringify(pingMessage)}\r\n`)
 	}
 }
