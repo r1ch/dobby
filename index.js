@@ -56,21 +56,24 @@ const spCloseHandler = connection => () =>{
 
 const spConnectionHandler = connection => () => {
 	//start the keepalive
-	setInterval(ping(connection),INTERVAL)
+	//setInterval(ping(connection),INTERVAL)
 }
 
 const spDataHandler = connection => data => {
 	//on data, tell anyone connected to the wss
 	let json = {}
-	try{ json = JSON.parse(data.toString()) }
+	try{ json = JSON.parse(data.toString().trim()) }
 	catch(e){ console.error(`Unparseable data: ${data.toString()}`)}
 	if(json.State && json.State.playstate){
 		wss.clients.forEach(sendJson(json.State.playstate))
+		connection.write(`{"State": {"ping": {"clientRtt": 0, "clientLatencyCalculation": ${json.State.latencyCalculation}, "latencyCalculation": ${Date.now()/1000}}, "playstate": {"paused": false, "position": ${json.State.position}}}}\r\n`)
 	}
 }
 
 const ping = connection => () => {
 	connection.write(`{"State": {"ping":{}}}\r\n`)
+	//{"State": {"ping": {"clientRtt": 0, "clientLatencyCalculation": 1394654662.196, "latencyCalculation": 1394654877.994533}, "playstate": {"paused": false, "position": 309.6000001487732}}}
+	connection.write(``)
 }
 
 
