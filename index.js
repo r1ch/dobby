@@ -34,9 +34,9 @@ wss.on('connection', wsConnectionHandler)
 const connectToSyncPlay = config => new Promise((resolve,reject)=>{
 		const connection = net.createConnection(config.port,config.host)
 		connection.on('connect',spConnectionHandler(connection))
-		connection.on('data',spDataHandler)
+		connection.on('data',spDataHandler(connection))
 		connection.write(`{"Hello": {"username": "${MY_NAME}", "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`);
-		setInterval(connection=>ping(connection),INTERVAL)
+		setInterval(ping(connection),INTERVAL)
 		resolve(connection)
 })
 
@@ -55,7 +55,7 @@ const spDataHandler = connection => () => {
 	}
 }
 
-const ping = connection => {
+const ping = connection => () => {
 	connection.write(`{"State": {"ping":{"clientRtt":0}}}\r\n`)
 }
 
@@ -65,4 +65,4 @@ const sendJson = json => client => {
 }
 
 connectToSyncPlay(defaults)
-.then(()=>console.log(`Connected to ${defaults}`))
+.then(()=>console.log(`Connected to ${JSON.stringify(defaults)}`))
