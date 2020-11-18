@@ -1,11 +1,25 @@
+//Libraries
 const WebSocket = require("ws")
 const net = require("net")
 
+//Constants
+const MY_NAME = "Dobby"
+const VERSION = "1.6.6" // this is which version of syncplay to say we understand :shrug:
+const INTERVAL = 2000 // keepalive is 4secs to death
+
+//Defaults
+const defaults = {
+	room: "harryshotter",
+	port: "8996",
+	host: "syncplay.pl",
+}
+
+
+//Create a WebSocket listener on port 8080
 const wss = new WebSocket.Server({port:8080})
 
 const wsMessageHandler = ws => message => {
 	console.log(message)
-	ws.send("Drink your Disarrono fuck face")
 }
 
 const wsConnectionHandler = ws => {
@@ -13,28 +27,38 @@ const wsConnectionHandler = ws => {
 	ws.send("Welcome, Cuntface")
 }
 
-wss.on('connection', wsConnectionHandler)
+const wss.on('connection', wsConnectionHandler)
 
 
-const sync = net.createConnection(8996,`syncplay.pl`,()=>{
-	sync.on('data',data=>{
-		let json = {}
-		try{
-			json = JSON.parse(data.toString())
-		} catch(e){
-			console.error(`Unparseable data: ${data.toString()}`)
-		}
-		if(json.State && json.State.playstate){
-			wss.clients.forEach(client=>{
-				client.readyState === WebSocket.OPEN && client.send(JSON.stringify(json.State.playstate))
-			})
-		}
-	})
-
-	sync.write(`{"Hello": {"username": "Dobby", "room": {"name": "harryshotter"}, "version":"1.2.7"}}\r\n`)
-	setInterval(()=>{
-		sync.write(`{"State": {"ping":{"clientRtt":0}}}\r\n`)
-	},2000)
+//Create a SyncPlay socket
+const connectToSyncPlay = (config)=>new Promise((resolve,reject)=>{
+		const connection = net.createConnection(config.port,config.host)
+		connection.on('connect',spConnectionHandler(connection))
+		connection.on('data',spDataHandler)
+		connection.write(`{"Hello": {"username": "${MY_NAME}", "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`};
+		setInterval(connection=>ping(connection),INTERVAL)
 })
 
+const spConnectionHandler = connection => () => {
+	//start the keepalive
+	setInterval(connection=>ping(connection),INTERVAL)
+}
 
+const spDataHandler = connection => () => {
+	//on data, tell anyone connected to the wss
+	let json = {}
+	try{ json = JSON.parse(data.toString())}
+	catch(e){ console.error(`Unparseable data: ${data.toString()}`)}
+	if(json.State && json.State.playstate){
+		wss.clients.forEach(client=>sendJson(json.State.playstate))
+	}
+}
+
+const ping = connection => {
+	connection.write(`{"State": {"ping":{"clientRtt":0}}}\r\n`)
+}
+
+
+const sendJson = json => client => {
+	if(client.readyState == WebSocket.OPEN) client.send(JSON.stringify(json))
+}
