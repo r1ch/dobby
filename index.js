@@ -24,6 +24,7 @@ const wsMessageHandler = ws => message => {
 
 const wsConnectionHandler = ws => {
 	ws.on('message', wsMessageHandler(ws))
+	console.log("New connection")
 	ws.send("Welcome, Cuntface")
 }
 
@@ -46,10 +47,9 @@ const spConnectionHandler = connection => () => {
 }
 
 const spDataHandler = connection => data => {
-	console.log(data.toString())
 	//on data, tell anyone connected to the wss
 	let json = {}
-	try{ json = JSON.parse(data.toString())}
+	try{ json = JSON.parse(data.toString()) }
 	catch(e){ console.error(`Unparseable data: ${data.toString()}`)}
 	if(json.State && json.State.playstate){
 		wss.clients.forEach(client=>sendJson(json.State.playstate))
