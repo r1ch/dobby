@@ -3,8 +3,6 @@ const net = require("net")
 
 const wss = new WebSocket.Server({port:8080})
 
-let GLOBAL_MESS = {paused:false};
-
 const wsMessageHandler = ws => message => {
 	console.log(message)
 	ws.send("Drink your Disarrono fuck face")
