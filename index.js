@@ -19,12 +19,12 @@ const defaults = {
 const wss = new WebSocket.Server({port:8080})
 
 const wsMessageHandler = ws => message => {
-	console.log(message)
+	//console.log(message)
 }
 
 const wsConnectionHandler = ws => {
 	ws.on('message', wsMessageHandler(ws))
-	console.log("New connection")
+	//console.log("New connection")
 	ws.send("Welcome, Cuntface")
 }
 
@@ -51,10 +51,7 @@ const spDataHandler = connection => data => {
 	try{ json = JSON.parse(data.toString()) }
 	catch(e){ console.error(`Unparseable data: ${data.toString()}`)}
 	if(json.State && json.State.playstate){
-		console.log(`good data: ${json.State}`)
 		wss.clients.forEach(sendJson(json.State.playstate))
-	} else {
-		console.error(`bad data: ${json.State}`)
 	}
 }
 
@@ -64,7 +61,6 @@ const ping = connection => () => {
 
 
 const sendJson = json => client => {
-	console.log(json,client.readyState)
 	if(client.readyState === WebSocket.OPEN) client.send(JSON.stringify(json))
 }
 
