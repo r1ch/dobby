@@ -46,6 +46,7 @@ const spConnectionHandler = connection => () => {
 }
 
 const spDataHandler = connection => data => {
+	console.log(data)
 	//on data, tell anyone connected to the wss
 	let json = {}
 	try{ json = JSON.parse(data.toString())}
