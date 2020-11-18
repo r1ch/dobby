@@ -51,7 +51,10 @@ const spDataHandler = connection => data => {
 	try{ json = JSON.parse(data.toString()) }
 	catch(e){ console.error(`Unparseable data: ${data.toString()}`)}
 	if(json.State && json.State.playstate){
+		console.log(`good data: ${json.State}`)
 		wss.clients.forEach(client=>sendJson(json.State.playstate))
+	} else {
+		console.error(`bad data: ${json.State}`)
 	}
 }
 
