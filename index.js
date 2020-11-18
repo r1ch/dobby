@@ -61,7 +61,7 @@ const spDataHandler = connection => data => {
 }
 
 const ping = connection => () => {
-	connection.write(`{"State": {"ping":{"clientRtt":0}}}\r\n`)
+	//connection.write(`{"State": {"ping":{"clientRtt":0}}}\r\n`)
 }
 
 
