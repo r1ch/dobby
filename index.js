@@ -45,7 +45,7 @@ const spConnectionHandler = connection => () => {
 	setInterval(connection=>ping(connection),INTERVAL)
 }
 
-const spDataHandler = connection => () => {
+const spDataHandler = connection => data => {
 	//on data, tell anyone connected to the wss
 	let json = {}
 	try{ json = JSON.parse(data.toString())}
