@@ -31,12 +31,13 @@ wss.on('connection', wsConnectionHandler)
 
 
 //Create a SyncPlay socket
-const connectToSyncPlay = (config)=>new Promise((resolve,reject)=>{
+const connectToSyncPlay = config => new Promise((resolve,reject)=>{
 		const connection = net.createConnection(config.port,config.host)
 		connection.on('connect',spConnectionHandler(connection))
 		connection.on('data',spDataHandler)
 		connection.write(`{"Hello": {"username": "${MY_NAME}", "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`);
 		setInterval(connection=>ping(connection),INTERVAL)
+		resolve(connection)
 })
 
 const spConnectionHandler = connection => () => {
@@ -62,3 +63,6 @@ const ping = connection => {
 const sendJson = json => client => {
 	if(client.readyState == WebSocket.OPEN) client.send(JSON.stringify(json))
 }
+
+connectToSyncPlay(defaults)
+.then(()=>console.log(`Connected to ${defaults}`))
