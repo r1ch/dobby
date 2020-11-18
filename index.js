@@ -67,7 +67,7 @@ const spDataHandler = connection => data => {
 	if(json.State && json.State.playstate){
 		console.log(data.toString().trim())
 		wss.clients.forEach(sendJson(json.State.playstate))
-		let ping = `{"State": {"ping": {"clientRtt": 0, "clientLatencyCalculation": ${json.State.latencyCalculation}, "latencyCalculation": ${Date.now()/1000}}, "playstate": {"paused": false, "position": ${json.State.position}}}}\r\n`;
+		let ping = `{"State": {"ping": {"clientRtt": 0, "clientLatencyCalculation": ${json.State.ping.latencyCalculation}, "latencyCalculation": ${Date.now()/1000}}, "playstate": {"paused": false, "position": ${json.State.ping.position}}}}\r\n`;
 		console.log(ping)
 		//connection.write(ping)
 	}
