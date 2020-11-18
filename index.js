@@ -44,7 +44,7 @@ const connectToSyncPlay = config => new Promise((resolve,reject)=>{
 		connection.once('connect',spConnectionHandler(connection))
 		connection.on('data',spDataHandler(connection))
 		connection.on('close',spCloseHandler(connection))
-		connection.write(`{"Hello": {"username": "${MY_NAME}", "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`);
+		connection.write(`{"Hello": {"username": "${MY_NAME}", "isReady":false, "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`);
 		resolve(connection)
 })
 
