@@ -19,14 +19,16 @@ const defaults = {
 //Global shared state between SyncPlay and WSS
 class SharedPlayState {
 	constructor() {
-	this._playstate = false
-	this._time = false
+		this._playstate = false
+		this._time = false
 	}
-	set playstate(playstate){
+	
+	set playstate(playstate) {
 		this._playstate = playstate
 		this._time = Date.now()
 	}
-	get playstate{
+	
+	get playstate() {
 		if(!this._playstate){
 			return {position:0}
 		} else {
