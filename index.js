@@ -81,8 +81,13 @@ const spDataHandler = connection => data => {
 }
 
 const ping = connection => () => {
-	//connection.write(`{"State": {"playstate": {"paused":null,"position":null}}\r\n`)
-	connection.write(`{"Set": {"isReady": true}}\r\n`)
+	let pingMessage = {
+		State:{
+			ping:{clientRtt:0,clientLatencyCalculation:Date.now()/1000},
+			playstate: {paused: null, position: null}
+		}
+	};
+	connection.write(`${JSON.stringify(pingMessage)}\r\n`)
 }
 
 
