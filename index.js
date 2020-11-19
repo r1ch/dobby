@@ -59,25 +59,28 @@ const spConnectionHandler = connection => () => {
 	setInterval(ping(connection),INTERVAL)
 }
 
-const pingMessage = latencyCalculation => `${JSON.stringify({
-	State:{
-		ping:{clientRtt:0,clientLatencyCalculation:Date.now()/1000,latencyCalculation:latencyCalculation||null},
-		playstate: {paused:null , position: null}
-	}       
-})}\r\n`;
-
+const pingMessage = latencyCalculation => {
+	let message = {
+		State:{
+			ping: {clientRtt:0, clientLatencyCalculation:Date.now()/1000},
+			playstate: {paused:null, position: null}
+		}
+	};
+	if(latencyCalculation) message.State.ping.latencyCalculation = latencyCalculation;
+	return `${JSON.stringify(message)}\r\n`;
+}
+	
+	
 const spDataHandler = connection => data => {
-	//on data, tell anyone connected to the wss
-	let json = {}
-	try{ json = JSON.parse(data.toString().trim()) }
-	catch(e){ console.error(`Unparseable data: ->${data.toString()}<-`)}
-	if(json.State && json.State.playstate){
-		console.log(data.toString().trim())
-		wss.clients.forEach(sendJson(json.State.playstate))
-		//Will have: {"State": {"playstate": {"paused": false, "position": 300.56051483154295, "setBy": "Bob", "doSeek": false}, "ping": {"yourLatency": 0.012035489082336426, "senderLatency": 0.012035489082336426, "latencyCalculation": 1394654868.994537}}}
-		//Must send {"State": {"ping": {"clientRtt": 0, "clientLatencyCalculation": 1394654653.11, "latencyCalculation": 1394654868.994537}, "playstate": {"paused": false, "position": 300.5129999217987}}}
-		connection.write(pingMessage(json.State.latencyCalculation));
-	}
+	data.toString().split(/\r?\n/).forEach(item=>{
+		let json = {};
+		try{ json = JSON.parse(item) }
+		catch(e){ console.error(`Unparseable data: ->${item}<-`) }
+		if( json.State && json.State.playstate ){
+			wss.clients.forEach(sendJson(json.State.playstate))
+			connection.write(pingMessage(json.State.latencyCalculation));
+		}
+	})
 }
 
 const ping = connection => () => {
