@@ -13,7 +13,7 @@ git clone https://github.com/r1ch/dobby.git
 cd dobby
 npm ci
 chmod 644 dobby.service
-mv dobby.service /lib/systemd/system
+sudo mv dobby.service /lib/systemd/system
 sudo systemctl daemon-reload
 sudo systemctl enable dobby.service
 ```
