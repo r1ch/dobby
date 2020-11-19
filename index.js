@@ -81,7 +81,8 @@ const spDataHandler = connection => data => {
 }
 
 const ping = connection => () => {
-	connection.write(`{"State": {"playstate": {"paused":null,"position":null}}\r\n`)
+	//connection.write(`{"State": {"playstate": {"paused":null,"position":null}}\r\n`)
+	connection.write(`{"Set": {"isReady": true}}\r\n`)
 }
 
 
