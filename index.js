@@ -7,7 +7,7 @@ const fs = require("fs")
 //Constants
 const MY_NAME = "Dobby"
 const VERSION = "1.6.6" // this is which version of syncplay to say we understand :shrug:
-const INTERVAL = 2000 // keepalive is 4secs to death
+const BROADCAST_INTERVAL = 500
 
 //Defaults
 const defaults = {
@@ -16,7 +16,30 @@ const defaults = {
 	host: "syncplay.pl",
 }
 
-//Secure as shit mate
+//Global shared state between SyncPlay and WSS
+class SharedPlayState {
+	constructor() {
+	this._playstate = false
+	this._time = false
+	}
+	set playstate(playstate){
+		this._playstate = playstate
+		this._time = Date.now()
+	}
+	get playstate{
+		if(!this._playstate){
+			return {position:0}
+		} else {
+			let playstate = Object.assign({},this._playstate)
+			if(!this._playstate.paused) playstate.position += (Date.now()-this._time)*1000
+			return playstate
+		}
+	}
+}
+
+const GLOBAL_PLAYSTATE = new SharedPlayState();
+
+//Secure for wss
 const server = https.createServer({
   cert: fs.readFileSync('./cert.pem'),
   key: fs.readFileSync('./key.pem')
@@ -35,6 +58,14 @@ const wsConnectionHandler = ws => {
 }
 
 wss.on('connection', wsConnectionHandler)
+
+const broadcast = ()=>{
+	wss.clients.forEach(sendJson(GLOBAL_PLAYSTATE.playstate))
+}
+
+setInterval(broadcast,BROADCAST_INTERVAL)
+
+
 server.listen(8443);
 
 
@@ -55,7 +86,6 @@ const spCloseHandler = connection => message =>{
 }
 
 const spConnectionHandler = connection => () => {
-	setInterval(ping(connection),INTERVAL)
 }
 
 const pingMessage = latencyCalculation => {
@@ -76,16 +106,11 @@ const spDataHandler = connection => data => {
 		try{ json = JSON.parse(item) }
 		catch(e){ console.error(`Unparseable data: ->${item}<-`) }
 		if( json.State && json.State.playstate ){
-			wss.clients.forEach(sendJson(json.State.playstate))
+			GLOBAL_PLAYSTATE.playstate = json.State.playstate;
 			connection.write(pingMessage(json.State.latencyCalculation));
 		}
 	})
 }
-
-const ping = connection => () => {
-	//connection.write(pingMessage());
-}
-
 
 const sendJson = json => client => {
 	if(client.readyState === WebSocket.OPEN) client.send(JSON.stringify(json))
