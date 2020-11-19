@@ -1,15 +1,13 @@
 [Unit]
 Description=Dobby
-After=multi-user.target
+After=network.target
 
 [Service]
-ExecStart=/home/ec2-user/.nvm/versions/node/v15.2.1/bin/node /home/ec2-user/dobby/index.js 
-Restart=always
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=dobby
+Type=simple
 User=ec2-user
-Group=ec2-user
+WorkingDirectory=/home/ec2-user/dobby
+ExecStart=/usr/bin/node index.js
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
