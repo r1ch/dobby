@@ -7,7 +7,7 @@ Type=simple
 User=ec2-user
 WorkingDirectory=/home/ec2-user/dobby
 ExecStart=/home/ec2-user/.nvm/versions/node/v15.2.1/bin/node index.js
-Restart=on-failure
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
