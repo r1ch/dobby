@@ -48,8 +48,8 @@ const connectToSyncPlay = config => new Promise((resolve,reject)=>{
 		resolve(connection)
 })
 
-const spCloseHandler = connection => () =>{
-	console.error("Shit is so cash, I just closed")
+const spCloseHandler = connection => message =>{
+	console.error(`Closed with : ${JSON.stringify(message)}`)
 	connectToSyncPlay(defaults)
 	.then(()=>console.log(`Reconnected to ${JSON.stringify(defaults)}`))
 }
