@@ -69,25 +69,18 @@ const spDataHandler = connection => data => {
 		wss.clients.forEach(sendJson(json.State.playstate))
 		//Will have: {"State": {"playstate": {"paused": false, "position": 300.56051483154295, "setBy": "Bob", "doSeek": false}, "ping": {"yourLatency": 0.012035489082336426, "senderLatency": 0.012035489082336426, "latencyCalculation": 1394654868.994537}}}
 		//Must send {"State": {"ping": {"clientRtt": 0, "clientLatencyCalculation": 1394654653.11, "latencyCalculation": 1394654868.994537}, "playstate": {"paused": false, "position": 300.5129999217987}}}
-		/*let pingMessage = {
+		let pingMessage = {
 			State:{
 				ping:{clientRtt:0,clientLatencyCalculation:Date.now()/1000,latencyCalculation:json.State.ping.latencyCalculation},
-				playstate: {paused:false, position: json.State.playstate.position},
+				playstate: {paused:null , position: null},
 			}       
 		}
-		console.log(`Ping w/:${JSON.stringify(pingMessage)}`)
-		connection.write(`${JSON.stringify(pingMessage)}\r\n`)*/
+		connection.write(`${JSON.stringify(pingMessage)}\r\n`)
 	}
 }
 
 const ping = connection => () => {
-	let pingMessage = {
-		State:{
-			ping:{clientRtt:0,clientLatencyCalculation:Date.now()/1000},
-			playstate: {paused: null, position: null}
-		}
-	};
-	connection.write(`${JSON.stringify(pingMessage)}\r\n`)
+	//connection.write(`${JSON.stringify(pingMessage)}\r\n`)
 }
 
 
