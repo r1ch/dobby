@@ -55,7 +55,6 @@ const spCloseHandler = connection => message =>{
 }
 
 const spConnectionHandler = connection => () => {
-	//start the keepalive
 	setInterval(ping(connection),INTERVAL)
 }
 
@@ -84,8 +83,7 @@ const spDataHandler = connection => data => {
 }
 
 const ping = connection => () => {
-	console.log(`PINGING : ${pingMessage()}`)
-	connection.write(pingMessage());
+	//connection.write(pingMessage());
 }
 
 
