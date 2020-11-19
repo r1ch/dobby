@@ -33,7 +33,7 @@ class SharedPlayState {
 			return {position:0}
 		} else {
 			let playstate = Object.assign({},this._playstate)
-			if(!this._playstate.paused) playstate.position += (Date.now()-this._time)
+			if(!this._playstate.paused) playstate.position += (Date.now()-this._time)/1000
 			return playstate
 		}
 	}
