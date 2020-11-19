@@ -72,7 +72,7 @@ const pingMessage = latencyCalculation => {
 	
 	
 const spDataHandler = connection => data => {
-	data.toString().split(/\r?\n/).forEach(item=>{
+	data.toString().trim().split(/\r?\n/).forEach(item=>{
 		let json = {};
 		try{ json = JSON.parse(item) }
 		catch(e){ console.error(`Unparseable data: ->${item}<-`) }
