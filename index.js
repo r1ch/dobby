@@ -24,7 +24,7 @@ class SharedPlayState {
 	}
 	
 	set playstate(playstate) {
-		this._playstate = playstate
+		this._playstate = Object.assign({},playstate)
 		this._time = Date.now()
 	}
 	
