@@ -81,6 +81,7 @@ const spDataHandler = connection => data => {
 }
 
 const ping = connection => () => {
+	console.log("PINGING")
 	connection.write(pingMessage());
 }
 
