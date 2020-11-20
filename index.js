@@ -68,17 +68,16 @@ const wsMessageHandler = ws => message => {
 	}
 	if(json && json.port && json.room){
 		let slug = `${json.port}:${json.room}`
-		ROOMS[slug] = ROOMS[slug] || {}
 		if(!ROOMS[slug]){
+			ROOMS[slug] = {}
 			let config = Object.assign({},defaults)
 			config.port = json.port
 			config.room = json.room
 			config.shared = new SharedPlayState();
 			ROOMS[slug].server = connectToSyncPlay(config)
 			ROOMS[slug].config = config
-		} else {
-			ROOMS[slug].config.shared.addClient(ws)
 		}
+		ROOMS[slug].config.shared.addClient(ws)
 	}
 }
 
