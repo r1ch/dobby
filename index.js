@@ -22,7 +22,7 @@ class SharedPlayState {
 		this._playstate = false
 		this._time = false
 		this._clients = []
-		setInterval(this.broadcast,BROADCAST_INTERVAL)
+		setInterval(()=>this.broadcast,BROADCAST_INTERVAL)
 	}
 	
 	set playstate(playstate) {
