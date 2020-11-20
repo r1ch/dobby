@@ -64,7 +64,7 @@ const wsMessageHandler = ws => message => {
 	try{
 		json = JSON.parse(message.data)
 	} catch(e){
-		console.error(`Dropped: ${JSON.stringify(message)})
+		console.error(`Dropped: ${JSON.stringify(message)}`)
 	}
 	if(json && json.port && json.room){
 		let slug = `${json.port}:${json.room}`
