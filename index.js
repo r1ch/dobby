@@ -16,11 +16,13 @@ const defaults = {
 	host: "syncplay.pl",
 }
 
-//Global shared state between SyncPlay and WSS
+//Shared RoomState
 class SharedPlayState {
 	constructor() {
 		this._playstate = false
 		this._time = false
+		this._clients = []
+		setInterval(this.broadcast,BROADCAST_INTERVAL)
 	}
 	
 	set playstate(playstate) {
@@ -37,9 +39,17 @@ class SharedPlayState {
 			return playstate
 		}
 	}
+	
+	addClient(client){
+		this._clients.push(client)
+	}
+	
+	broadcast(){
+		this._clients.forEach(client=>client.send(JSON.stringify(this.playstate)))
+	}
 }
 
-const GLOBAL_PLAYSTATE = new SharedPlayState();
+const ROOMS = []
 
 //Secure for wss
 const server = https.createServer({
@@ -50,41 +60,49 @@ const server = https.createServer({
 const wss = new WebSocket.Server({ server });
 
 const wsMessageHandler = ws => message => {
-	//console.log(message)
+	let json = false
+	try{
+		json = JSON.parse(message.data)
+	} catch(e){
+		console.error(`Dropped: ${JSON.stringify(message)})
+	}
+	if(json && json.port && json.room){
+		let slug = `${json.port}:${json.room}`
+		ROOMS[slug] = ROOMS[slug] || {}
+		if(!ROOMS[slug]){
+			let config = Object.assign({},defaults)
+			config.port = json.port
+			config.room = json.room
+			config.shared = new SharedPlayState();
+			ROOMS[slug].server = connectToSyncPlay(config)
+			ROOMS[slug].config = config
+		} else {
+			ROOMS[slug].config.shared.addClient(ws)
+		}
+	}
 }
 
 const wsConnectionHandler = ws => {
 	ws.on('message', wsMessageHandler(ws))
-	//console.log("New connection")
-	ws.send("Welcome, Cuntface")
 }
 
 wss.on('connection', wsConnectionHandler)
 
-const broadcast = ()=>{
-	wss.clients.forEach(sendJson(GLOBAL_PLAYSTATE.playstate))
-}
-
-setInterval(broadcast,BROADCAST_INTERVAL)
-
-
 server.listen(8443);
 
-
-//Create a SyncPlay socket
+//How to create a SyncPlay socket
 const connectToSyncPlay = config => new Promise((resolve,reject)=>{
 		const connection = net.createConnection(config.port,config.host)
 		connection.once('connect',spConnectionHandler(connection))
-		connection.on('data',spDataHandler(connection))
-		connection.on('close',spCloseHandler(connection))
+		connection.on('data',spDataHandler(config,connection))
+		connection.on('close',spCloseHandler(config,connection))
 		connection.write(`{"Hello": {"username": "${MY_NAME}", "isReady":false, "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`);
 		resolve(connection)
 })
 
-const spCloseHandler = connection => message =>{
-	console.error(`Closed with : ${JSON.stringify(message)}`)
-	connectToSyncPlay(defaults)
-	.then(()=>console.log(`Reconnected to ${JSON.stringify(defaults)}`))
+const spCloseHandler = (config,connection) => message =>{
+	connectToSyncPlay(config)
+	.then(()=>console.log(`Reconnected to ${JSON.stringify(config)}`))
 }
 
 const spConnectionHandler = connection => () => {
@@ -102,13 +120,13 @@ const pingMessage = latencyCalculation => {
 }
 	
 	
-const spDataHandler = connection => data => {
+const spDataHandler = (config,connection) => data => {
 	data.toString().trim().split(/\r?\n/).forEach(item=>{
 		let json = {};
 		try{ json = JSON.parse(item) }
 		catch(e){ console.error(`Unparseable data: ->${item}<-`) }
 		if( json.State && json.State.playstate ){
-			GLOBAL_PLAYSTATE.playstate = json.State.playstate;
+			config.shared.playstate = json.State.playstate
 			connection.write(pingMessage(json.State.latencyCalculation));
 		}
 	})
@@ -117,6 +135,3 @@ const spDataHandler = connection => data => {
 const sendJson = json => client => {
 	if(client.readyState === WebSocket.OPEN) client.send(JSON.stringify(json))
 }
-
-connectToSyncPlay(defaults)
-.then(()=>console.log(`Connected to ${JSON.stringify(defaults)}`))
