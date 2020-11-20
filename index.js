@@ -62,7 +62,7 @@ const wss = new WebSocket.Server({ server });
 const wsMessageHandler = ws => message => {
 	let json = false
 	try{
-		json = JSON.parse(message.data)
+		json = JSON.parse(message)
 	} catch(e){
 		console.error(`Dropped: ${JSON.stringify(message)}`)
 	}
