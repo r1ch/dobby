@@ -94,14 +94,13 @@ const pingMessage = State => {
 	let message = {
 		State:{
 			ping: {clientRtt:0, clientLatencyCalculation:Date.now()/1000},
-			//playstate: {paused:null, position: null}
 		}
 	};
 	if(State.latencyCalculation) message.State.ping.latencyCalculation = State.latencyCalculation;
 	if(State.ignoringOnTheFly && State.ignoringOnTheFly.server){
 		message.State.ignoringOnTheFly = {
 			client : State.ignoringOnTheFly.server,
-			server : State.ignoringOnTheFly.server,
+			server : State.ignoringOnTheFly.server
 		}
 	}
 	return `${JSON.stringify(message)}\r\n`;
@@ -114,7 +113,6 @@ const spDataHandler = connection => data => {
 		try{ json = JSON.parse(item) }
 		catch(e){ console.error(`Unparseable data: ->${item}<-`) }
 		if( json.State && json.State.playstate ){
-			console.log(json.State)
 			GLOBAL_PLAYSTATE.playstate = json.State.playstate;
 			connection.write(pingMessage(json.State));
 		}
