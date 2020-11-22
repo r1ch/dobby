@@ -93,7 +93,7 @@ const spConnectionHandler = connection => () => {
 const pingMessage = latencyCalculation => {
 	let message = {
 		State:{
-			ping: {clientRtt:0, clientLatencyCalculation:Date.now()/1000},
+			ping: {serverRtt:0, clientLatencyCalculation:Date.now()/1000},
 			playstate: {paused:null, position: null}
 		}
 	};
