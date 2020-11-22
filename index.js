@@ -99,8 +99,10 @@ const pingMessage = State => {
 	};
 	if(State.latencyCalculation) message.State.ping.latencyCalculation = State.latencyCalculation;
 	if(State.ignoringOnTheFly && State.ignoringOnTheFly.server){
-		message.State.ignoringOnTheFly.server = State.ignoringOnTheFly.server
-		message.State.ignoringOnTheFly.client = State.ignoringOnTheFly.server
+		message.State.ignoringOnTheFly = {
+			client : State.ignoringOnTheFly.server,
+			server : State.ignoringOnTheFly.server,
+		}
 	}
 	return `${JSON.stringify(message)}\r\n`;
 }
