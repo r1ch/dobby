@@ -97,7 +97,7 @@ const pingMessage = latencyCalculation => {
 			playstate: {paused:null, position: null}
 		}
 	};
-	if(latencyCalculation) message.State.ping.latencyCalculation = latencyCalculation;
+	//if(latencyCalculation) message.State.ping.latencyCalculation = latencyCalculation;
 	return `${JSON.stringify(message)}\r\n`;
 }
 	
