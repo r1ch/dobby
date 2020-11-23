@@ -28,7 +28,7 @@ const broadcast = shared => () =>{
 }
   
 const send = json => client => {
-    json.epoch = Date.now()
+    json.issuedAt = Date.now()
     if(client.readyState === WebSocket.OPEN) client.send(JSON.stringify(json))
 }
 
