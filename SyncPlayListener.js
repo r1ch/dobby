@@ -9,14 +9,14 @@ const VERSION = "1.6.6" // this is which version of syncplay to say we understan
 const connectToSyncPlay = config => new Promise((resolve,reject)=>{
 
     //Check the config
-    if(!config || !config.playstate || !config.host || !config.port){
+    if(!config || !config.shared || !config.host || !config.port){
         console.error(`Invalid config ${JSON.stringify(config)}`)
         return reject("Invalid config")
     }
 
     const connection = net.createConnection(config.port,config.host)
     connection.once('connect',spConnectionHandler(connection))
-    connection.on('data',spDataHandler(config.playstate,connection))
+    connection.on('data',spDataHandler(config.shared,connection))
     connection.on('close',spCloseHandler(config))
     connection.write(`{"Hello": {"username": "${MY_NAME}", "isReady":false, "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`);
     resolve(connection)
@@ -48,13 +48,13 @@ const pingMessage = State => {
 }
 
 
-const spDataHandler = (playstate, connection) => data => {
+const spDataHandler = (shared, connection) => data => {
 data.toString().trim().split(/\r?\n/).forEach(item=>{
     let json = {};
     try{ json = JSON.parse(item) }
     catch(e){ console.error(`Unparseable data: ->${item}<-`) }
     if( json.State && json.State.playstate ){
-        playstate = json.State.playstate;
+        shared.playstate = json.State.playstate;
         connection.write(pingMessage(json.State));
     }
 })

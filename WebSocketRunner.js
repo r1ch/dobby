@@ -4,12 +4,12 @@ const https = require("https")
 const fs = require("fs")
 
 //Secure for wss
-const server = https.createServer({
+let server = https.createServer({
     cert: fs.readFileSync('./cert.pem'),
     key: fs.readFileSync('./key.pem')
 });
-  
-const wss = new WebSocket.Server({ server });
+
+const wss = new WebSocket.Server({server});
   
 const wsMessageHandler = ws => message => {
     //console.log(message)
@@ -23,27 +23,25 @@ const wsConnectionHandler = ws => {
   
 wss.on('connection', wsConnectionHandler)
 
-const broadcast = playstate => () =>{ 
-    wss.clients.forEach(send(playstate))
+const broadcast = shared => () =>{ 
+    wss.clients.forEach(send(shared.playstate))
 }
   
 const send = json => client => {
+    json.epoch = Date.now()
     if(client.readyState === WebSocket.OPEN) client.send(JSON.stringify(json))
-    //PRUNE dead clients
 }
 
 const start = config => new Promise((resolve,reject)=>{
-    if(!config || !config.port || !config.broadcast_interval || !config.playstate){
+    if(!config || !config.port || !config.broadcast_interval || !config.shared){
         console.error(`Invalid config: ${JSON.stringify(config)}`)
         return reject("Invalid config")
     } else {
         server.listen(config.port)
-        setInterval(broadcast(config.playstate),config.broadcast_interval)
+        setInterval(broadcast(config.shared),config.broadcast_interval)
         resolve()
     }
 })
-
-
 
 module.exports = {
     start : start

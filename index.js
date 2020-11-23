@@ -5,17 +5,17 @@ const PlayState = require("./PlayState")
 
 //Config Objects
 
-const sharedPlayState = new PlayState()
+const shared = new PlayState()
 
 const syncPlayConfig = {
-	playstate: sharedPlayState,
+	shared: shared,
 	host: "syncplay.pl",
 	port: 8996,
 	room: "harryshotter"
 }
 
 const socketConfig = {
-	playstate: sharedPlayState,
+	shared: shared,
 	broadcast_interval: 500,
 	port: 8443,
 }
