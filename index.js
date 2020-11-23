@@ -1,127 +1,30 @@
-//Libraries
-const WebSocket = require("ws")
-const net = require("net")
-const https = require("https")
-const fs = require("fs")
+//Internals
+const SyncPlayListener = require("./SyncPlayListener")
+const WebSocketRunner = require("./WebSocketRunner")
+const PlayState = require("./PlayState")
 
-//Constants
-const MY_NAME = "Dobby"
-const VERSION = "1.6.6" // this is which version of syncplay to say we understand :shrug:
-const BROADCAST_INTERVAL = 500
+//Config Objects
 
-//Defaults
-const defaults = {
-	room: "harryshotter",
-	port: "8996",
+const sharedPlayState = new PlayState()
+
+const syncPlayConfig = {
+	playstate: sharedPlayState,
 	host: "syncplay.pl",
+	port: 8996,
+	room: "harryshotter"
 }
 
-//Global shared state between SyncPlay and WSS
-class SharedPlayState {
-	constructor() {
-		this._playstate = false
-		this._time = false
-	}
-	
-	set playstate(playstate) {
-		this._playstate = Object.assign({},playstate)
-		this._time = Date.now()
-	}
-	
-	get playstate() {
-		if(!this._playstate){
-			return {position:0}
-		} else {
-			let playstate = Object.assign({},this._playstate)
-			if(!this._playstate.paused) playstate.position += (Date.now()-this._time)/1000
-			return playstate
-		}
-	}
+const socketConfig = {
+	playstate: sharedPlayState,
+	broadcast_interval: 500,
+	port: 8443,
 }
 
-const GLOBAL_PLAYSTATE = new SharedPlayState();
+//Wiring
 
-//Secure for wss
-const server = https.createServer({
-  cert: fs.readFileSync('./cert.pem'),
-  key: fs.readFileSync('./key.pem')
-});
-
-const wss = new WebSocket.Server({ server });
-
-const wsMessageHandler = ws => message => {
-	//console.log(message)
-}
-
-const wsConnectionHandler = ws => {
-	ws.on('message', wsMessageHandler(ws))
-	//console.log("New connection")
-	ws.send("Welcome, Cuntface")
-}
-
-wss.on('connection', wsConnectionHandler)
-
-const broadcast = ()=>{
-	wss.clients.forEach(sendJson(GLOBAL_PLAYSTATE.playstate))
-}
-
-setInterval(broadcast,BROADCAST_INTERVAL)
-
-
-server.listen(8443);
-
-
-//Create a SyncPlay socket
-const connectToSyncPlay = config => new Promise((resolve,reject)=>{
-		const connection = net.createConnection(config.port,config.host)
-		connection.once('connect',spConnectionHandler(connection))
-		connection.on('data',spDataHandler(connection))
-		connection.on('close',spCloseHandler(connection))
-		connection.write(`{"Hello": {"username": "${MY_NAME}", "isReady":false, "room": {"name": "${config.room}"}, "version":"${VERSION}"}}\r\n`);
-		resolve(connection)
-})
-
-const spCloseHandler = connection => message =>{
-	console.error(`Closed with : ${JSON.stringify(message)}`)
-	connectToSyncPlay(defaults)
-	.then(()=>console.log(`Reconnected to ${JSON.stringify(defaults)}`))
-}
-
-const spConnectionHandler = connection => () => {
-}
-
-const pingMessage = State => {
-	let message = {
-		State:{
-			ping: {clientRtt:0, clientLatencyCalculation:Date.now()/1000},
-		}
-	};
-	if(State.latencyCalculation) message.State.ping.latencyCalculation = State.latencyCalculation;
-	if(State.ignoringOnTheFly && State.ignoringOnTheFly.server){
-		message.State.ignoringOnTheFly = {
-			client : State.ignoringOnTheFly.server,
-			server : State.ignoringOnTheFly.server
-		}
-	}
-	return `${JSON.stringify(message)}\r\n`;
-}
-	
-	
-const spDataHandler = connection => data => {
-	data.toString().trim().split(/\r?\n/).forEach(item=>{
-		let json = {};
-		try{ json = JSON.parse(item) }
-		catch(e){ console.error(`Unparseable data: ->${item}<-`) }
-		if( json.State && json.State.playstate ){
-			GLOBAL_PLAYSTATE.playstate = json.State.playstate;
-			connection.write(pingMessage(json.State));
-		}
-	})
-}
-
-const sendJson = json => client => {
-	if(client.readyState === WebSocket.OPEN) client.send(JSON.stringify(json))
-}
-
-connectToSyncPlay(defaults)
-.then(()=>console.log(`Connected to ${JSON.stringify(defaults)}`))
+Promise.all([
+	SyncPlayListener.connect(syncPlayConfig),
+	WebSocketRunner.start(socketConfig)
+])
+.then(()=>console.log("Started"))
+.catch(console.error)
