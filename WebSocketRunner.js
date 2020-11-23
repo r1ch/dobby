@@ -12,9 +12,9 @@ const start = config => new Promise((resolve,reject)=>{
     
     const wss = new WebSocket.Server({server});
     const wsMessageHandler = ws => message => {}
-    const wsConnectionHandler = shared => ws => {
+    const wsConnectionHandler = ws => {
         ws.on('message', wsMessageHandler(ws))
-        let message = Object.assign({issuedAt:Date.now()},shared.playstate)
+        let message = Object.assign({issuedAt:Date.now()},config.shared.playstate)
         ws.send(JSON.stringify(message))
     }
     
@@ -30,7 +30,7 @@ const start = config => new Promise((resolve,reject)=>{
         return reject("Invalid config")
     } else {
         server.listen(config.port)
-        wss.on('connection', wsConnectionHandler(config.shared))
+        wss.on('connection', wsConnectionHandler)
         setInterval(broadcast(config.shared),config.broadcast_interval)
         resolve()
     }
