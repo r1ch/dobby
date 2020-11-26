@@ -29,7 +29,6 @@ const spCloseHandler = config => message =>{
 }
 
 const spConnectionHandler = connection => () => {
-    setInterval(pinger(connection),1000)
 }
 
 const pingMessage = State => {
@@ -47,8 +46,6 @@ const pingMessage = State => {
     }
     return `${JSON.stringify(message)}\r\n`;
 }
-
-const pinger = connection => () => connection.write(pingMessage())
 
 const spDataHandler = (shared, connection) => data => {
 data.toString().trim().split(/\r?\n/).forEach(item=>{
