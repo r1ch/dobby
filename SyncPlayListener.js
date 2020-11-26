@@ -49,7 +49,7 @@ const pingMessage = State => {
     return `${JSON.stringify(message)}\r\n`;
 }
 
-const pinger = connection => connection.write(pingMessage())
+const pinger = connection => () => connection.write(pingMessage())
 
 const spDataHandler = (shared, connection) => data => {
 data.toString().trim().split(/\r?\n/).forEach(item=>{
