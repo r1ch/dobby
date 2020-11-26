@@ -38,9 +38,9 @@ const pingMessage = State => {
             ping: {clientRtt:0, clientLatencyCalculation:Date.now()/1000},
         }
     };
-    if(State.playstate) message.State.playstate = State.playstate;
-    if(State.ping.latencyCalculation) message.State.ping.latencyCalculation = State.ping.latencyCalculation;
-    if(State.ignoringOnTheFly && State.ignoringOnTheFly.server){
+    if(State && State.playstate) message.State.playstate = State.playstate;
+    if(State && State.ping && State.ping.latencyCalculation) message.State.ping.latencyCalculation = State.ping.latencyCalculation;
+    if(State && State.ignoringOnTheFly && State.ignoringOnTheFly.server){
         message.State.ignoringOnTheFly = {
             client : State.ignoringOnTheFly.server,
             server : State.ignoringOnTheFly.server
@@ -49,7 +49,7 @@ const pingMessage = State => {
     return `${JSON.stringify(message)}\r\n`;
 }
 
-const pinger = connection => connection.write(pingMessage({}))
+const pinger = connection => connection.write(pingMessage())
 
 const spDataHandler = (shared, connection) => data => {
 data.toString().trim().split(/\r?\n/).forEach(item=>{
