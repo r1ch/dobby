@@ -37,6 +37,7 @@ const pingMessage = State => {
             ping: {clientRtt:0, clientLatencyCalculation:Date.now()/1000},
         }
     };
+    if(State.playstate) message.State.playstate = State.playstate;
     if(State.ping.latencyCalculation) message.State.ping.latencyCalculation = State.ping.latencyCalculation;
     if(State.ignoringOnTheFly && State.ignoringOnTheFly.server){
         message.State.ignoringOnTheFly = {
