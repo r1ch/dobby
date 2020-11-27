@@ -27,4 +27,7 @@ Promise.all([
 	WebSocketRunner.start(socketConfig)
 ])
 .then(()=>console.log("Started"))
-.catch(console.error)
+.catch(error=>{
+	console.error(`Fatal: ${JSON.stringify(error)}`)
+	process.exit(-1)
+})
