@@ -17,3 +17,7 @@ sudo mv dobby.service /lib/systemd/system
 sudo systemctl daemon-reload
 sudo systemctl enable dobby.service
 ```
+
+## Certificates
+To run securely you'll need local certificates (see WebSocketRunner.js)
+I got these from CloudFlare (as origin certs) they will only work for a server hidden behing CloudFlare... which is perfect for this.
