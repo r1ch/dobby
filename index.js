@@ -30,7 +30,7 @@ Promise.all([
 	console.log("Started")
 	const messageHandler = SyncPlayListener.messageHandlerFromConnection(syncPlayConnection)
 	//Wire up the drink announcer:
-	WebSocketRunner.FatherJack.on('drink',messageHandler)
+	WebSocketRunner.fatherJack.on('drink',messageHandler)
 })
 .catch(error=>{
 	console.error(`Fatal: ${JSON.stringify(error)}`)
