@@ -1,7 +1,11 @@
 //Libraries
+const EventEmitter = require('events');
 const WebSocket = require("ws")
 const https = require("https")
 const fs = require("fs")
+
+
+class FatherJack extends EventEmitter {}
 
 const start = config => new Promise((resolve,reject)=>{
     //Grab certs for server
@@ -11,7 +15,11 @@ const start = config => new Promise((resolve,reject)=>{
     });
     
     const wss = new WebSocket.Server({server});
-    const wsMessageHandler = ws => message => {}
+    const wsMessageHandler = ws => message => {
+        console.log(message)
+        FatherJack.emit('drink',message)
+    }
+    
     const wsConnectionHandler = ws => {
         ws.on('message', wsMessageHandler(ws))
         let message = Object.assign({issuedAt:Date.now()},config.shared.playstate)
@@ -37,5 +45,6 @@ const start = config => new Promise((resolve,reject)=>{
 })
 
 module.exports = {
-    start : start
+    start : start,
+    FatherJack : FatherJack
 }
