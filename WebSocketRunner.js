@@ -4,8 +4,7 @@ const WebSocket = require("ws")
 const https = require("https")
 const fs = require("fs")
 
-
-class FatherJack extends EventEmitter {}
+const fatherJack = new events.EventEmitter();
 
 const start = config => new Promise((resolve,reject)=>{
     //Grab certs for server
@@ -17,7 +16,7 @@ const start = config => new Promise((resolve,reject)=>{
     const wss = new WebSocket.Server({server});
     const wsMessageHandler = ws => message => {
         console.log(message)
-        FatherJack.emit('drink',message)
+        fatherJack.emit('drink',message)
     }
     
     const wsConnectionHandler = ws => {
@@ -46,5 +45,5 @@ const start = config => new Promise((resolve,reject)=>{
 
 module.exports = {
     start : start,
-    FatherJack : FatherJack
+    fatherJack : fatherJack
 }
