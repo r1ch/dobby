@@ -15,7 +15,6 @@ const start = config => new Promise((resolve,reject)=>{
     
     const wss = new WebSocket.Server({server});
     const wsMessageHandler = ws => message => {
-        console.log(message)
         fatherJack.emit('drink',message)
     }
     
