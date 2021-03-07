@@ -22,7 +22,7 @@ const connectToSyncPlay = config => new Promise((resolve,reject)=>{
     resolve(connection)
 })
 
-const messageHandlerFromConection = connection => message => {
+const messageHandlerFromConnection = connection => message => {
     connection.write(chatMessage(message));
 }
 
