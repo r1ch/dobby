@@ -29,9 +29,8 @@ Promise.all([
 .then(([syncPlayConnection,webSocketConnection])=>{
 	console.log("Started")
 	const messageHandler = SyncPlayListener.messageHandlerFromConnection(syncPlayConnection)
-	setInterval(()=>{
-		messageHandler("Poop!")
-	},1000)
+	//Wire up the drink announcer:
+	WebSocketRunner.FatherJack.on('drink',messageHandler)
 })
 .catch(error=>{
 	console.error(`Fatal: ${JSON.stringify(error)}`)
