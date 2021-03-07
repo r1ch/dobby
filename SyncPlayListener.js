@@ -67,5 +67,5 @@ data.toString().trim().split(/\r?\n/).forEach(item=>{
 
 module.exports = {
     connect : connectToSyncPlay,
-    sendMessage : sendMessage
+    messageHandlerFromConnection : messageHandlerFromConnection 
 }
