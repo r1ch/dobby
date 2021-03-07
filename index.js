@@ -11,7 +11,7 @@ const syncPlayConfig = {
 	shared: shared,
 	host: "syncplay.pl",
 	port: 8996,
-	room: "harryshotter"
+	room: "diehard"
 }
 
 const socketConfig = {
