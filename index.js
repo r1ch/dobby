@@ -26,7 +26,13 @@ Promise.all([
 	SyncPlayListener.connect(syncPlayConfig),
 	WebSocketRunner.start(socketConfig)
 ])
-.then(()=>console.log("Started"))
+.then(([syncPlayConnection,webSocketConnection])=>{
+	console.log("Started")
+	const messageHandler = SyncPlayListener.messageHandlerFromConnection(syncPlayConnection)
+	setInterval(()=>{
+		messageHandler("Poop!")
+	},1000)
+})
 .catch(error=>{
 	console.error(`Fatal: ${JSON.stringify(error)}`)
 	process.exit(-1)
