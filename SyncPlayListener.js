@@ -22,6 +22,10 @@ const connectToSyncPlay = config => new Promise((resolve,reject)=>{
     resolve(connection)
 })
 
+const messageHandlerFromConection = connection => message => {
+    connection.write(chatMessage(message));
+}
+
 const spCloseHandler = config => message =>{
     console.error(`Closed with : ${JSON.stringify(message)}`)
     connectToSyncPlay(config)
@@ -30,6 +34,8 @@ const spCloseHandler = config => message =>{
 
 const spConnectionHandler = connection => () => {
 }
+
+const chatMessage = message => `${JSON.stringify({Chat:message})}\r\n`;
 
 const pingMessage = State => {
     let message = {
@@ -60,5 +66,6 @@ data.toString().trim().split(/\r?\n/).forEach(item=>{
 }
 
 module.exports = {
-    connect : connectToSyncPlay
+    connect : connectToSyncPlay,
+    sendMessage : sendMessage
 }
