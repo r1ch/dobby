@@ -30,6 +30,8 @@ const start = config => new Promise((resolve,reject)=>{
                 fatherJack.emit('drink',data.playerList)
                 evictionTimer = setTimeout(()=>lastMessage=-1,5000)
             }
+        } catch(e) {
+            console.error(`Dropped ${message}`)
         }
     }
     
