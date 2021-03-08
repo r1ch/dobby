@@ -6,7 +6,12 @@ const fs = require("fs")
 
 const fatherJack = new events.EventEmitter();
 
+
 const start = config => new Promise((resolve,reject)=>{
+    //Global message
+    let lastMessage = -1;
+    let evictionTimer;
+    
     //Grab certs for server
     const server = https.createServer({
         cert: fs.readFileSync('./cert.pem'),
@@ -14,8 +19,18 @@ const start = config => new Promise((resolve,reject)=>{
     });
     
     const wss = new WebSocket.Server({server});
+    
     const wsMessageHandler = ws => message => {
-        fatherJack.emit('drink',message)
+        //Pass each message on once, clear after 5 seconds anyway
+        try{
+            let data = JSON.parse(message)
+            if(data.time && data.playerList && data.time != lastMessage){
+                clearTimeout(evictionTimer)
+                lastMessage = data.time
+                fatherJack.emit('drink',data.playerList)
+                evictionTimer = setTimeout(()=>lastMessage=-1,5000)
+            }
+        }
     }
     
     const wsConnectionHandler = ws => {
