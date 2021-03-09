@@ -28,7 +28,12 @@ const start = config => new Promise((resolve,reject)=>{
                 clearTimeout(evictionTimer)
                 lastMessage = data.time
                 fatherJack.emit('drink',data.playerList)
-                evictionTimer = setTimeout(()=>lastMessage=-1,5000)
+                evictionTimer = setTimeout(()=>{
+                    console.log(`Clearing ${lastMessage}`) 
+                    lastMessage=-1
+                },5000)
+            } else {
+                console.log(`Dropping ${JSON.stringify(data)}`)
             }
         } catch(e) {
             console.error(`Dropped ${message}`)
