@@ -9,8 +9,7 @@ const fatherJack = new events.EventEmitter();
 
 const start = config => new Promise((resolve,reject)=>{
     //Global message
-    let lastMessage = -1;
-    let evictionTimer;
+    let messageSeen = {} ;
     
     //Grab certs for server
     const server = https.createServer({
@@ -24,13 +23,12 @@ const start = config => new Promise((resolve,reject)=>{
         //Pass each message on once, clear after 5 seconds anyway
         try{
             let data = JSON.parse(message)
-            if(data.time && data.playerList && data.time != lastMessage){
-                clearTimeout(evictionTimer)
-                lastMessage = data.time
+            if(data.time && data.playerList && !messageSeen[data.time]){
+                messageSeen[data.time] = true
                 fatherJack.emit('drink',data.playerList)
-                evictionTimer = setTimeout(()=>{
-                    //console.log(`Clearing ${lastMessage}`) 
-                    lastMessage=-1
+                setTimeout(()=>{
+                    console.log(`Cleaning ${JSON.stringify(Object.keys(messageSeen))}`) 
+                    delete messageSeen[data.time]
                 },5000)
             } else {
                 //console.log(`Dropping ${JSON.stringify(data)}`)
