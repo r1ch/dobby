@@ -27,12 +27,12 @@ const start = config => new Promise((resolve,reject)=>{
                 messageSeen[data.time] = true
                 fatherJack.emit('drink',data.playerList)
                 setTimeout(()=>{
-                    console.log(`Cleaning ${JSON.stringify(Object.keys(messageSeen))}`) 
+                    //console.log(`Cleaning ${JSON.stringify(Object.keys(messageSeen))}`) 
                     delete messageSeen[data.time]
-                    console.log(`->${JSON.stringify(Object.keys(messageSeen))}`) 
+                    //console.log(`->${JSON.stringify(Object.keys(messageSeen))}`) 
                 },5000)
             } else {
-                console.log(`Dropping ${JSON.stringify(data)}`)
+                //console.log(`Dropping ${JSON.stringify(data)}`)
             }
         } catch(e) {
             console.error(`Dropped ${message}`)
