@@ -31,7 +31,7 @@ const start = config => new Promise((resolve,reject)=>{
                     delete messageSeen[data.time]
                 },5000)
             } else {
-                //console.log(`Dropping ${JSON.stringify(data)}`)
+                console.log(`Dropping ${JSON.stringify(data)}`)
             }
         } catch(e) {
             console.error(`Dropped ${message}`)
