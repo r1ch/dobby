@@ -29,6 +29,7 @@ const start = config => new Promise((resolve,reject)=>{
                 setTimeout(()=>{
                     console.log(`Cleaning ${JSON.stringify(Object.keys(messageSeen))}`) 
                     delete messageSeen[data.time]
+                    console.log(`->${JSON.stringify(Object.keys(messageSeen))}`) 
                 },5000)
             } else {
                 console.log(`Dropping ${JSON.stringify(data)}`)
